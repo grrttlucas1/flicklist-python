@@ -57,8 +57,10 @@ class AddMovie(webapp2.RequestHandler):
         # TODO 1
         # Use a template to render the confirmation message
 
-        self.response.write("Under construction...")
-
+        # render confirmation page
+        t = jinja_env.get_template("add.html")
+        content = t.render(new_movie_escaped=new_movie_escaped)
+        self.response.write(content)
 
 class CrossOffMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/cross-off'
@@ -70,7 +72,7 @@ class CrossOffMovie(webapp2.RequestHandler):
 
         if not crossed_off_movie or crossed_off_movie.strip() == "":
             error = "Please specify a movie to cross off."
-            self.redirect("/?error=", cgi.escape(error))
+            self.redirect("/?error=" + cgi.escape(error))
 
         # if user tried to cross off a movie that is not in their list, reject
         if not (crossed_off_movie in getCurrentWatchlist()):
