@@ -97,9 +97,9 @@ class WatchedMovie(Handler):
         e.g. www.flicklist.com/watched-it
     """
 
-    def renderError(self, error_code):
-        self.error(error_code)
-        self.response.write("Oops! Something went wrong.")
+    #def renderError(self, error_code):
+    #    self.error(error_code)
+    #    self.response.write("Oops! Something went wrong.")
 
 
     def post(self):
@@ -127,11 +127,15 @@ class MovieRatings(Handler):
     def get(self):
         # TODO 1
         # Make a GQL query for all the movies that have been watched
-        watched_movies = [] # type something else instead of an empty list
+        # select * from Movies where watched = True
+        watched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = True ORDER BY created DESC") # type something else instead of an empty list
 
         # TODO (extra credit)
         # in the query above, add something so that the movies are sorted by creation date, most recent first
-
+        if not watched_movies:
+            self.renderError(400)
+            return
+            
         t = jinja_env.get_template("ratings.html")
         content = t.render(movies = watched_movies)
         self.response.write(content)
@@ -142,12 +146,13 @@ class MovieRatings(Handler):
 
         # TODO 2
         # retreive the movie entity whose id is movie_id
-        movie = None # type something else instead of None
+        movie = Movie.get_by_id( int(movie_id) ) # type something else instead of None
 
         if movie and rating:
             # TODO 3
             # update the movie's rating property and save it to the database
-
+            movie.rating = rating
+            movie.put()
 
             # render confirmation
             t = jinja_env.get_template("rating-confirmation.html")
