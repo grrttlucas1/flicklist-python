@@ -100,9 +100,9 @@ class WatchedMovie(webapp2.RequestHandler):
 
 class MovieRatings(webapp2.RequestHandler):
 
-    def renderError(self, error_code):
-        self.error(error_code)
-        self.response.write("Oops! Something went wrong.")
+    #def renderError(self, error_code):
+    #    self.error(error_code)
+    #    self.response.write("Oops! Something went wrong.")
 
     def get(self):
         t = jinja_env.get_template("ratings.html")
@@ -115,18 +115,6 @@ class MovieRatings(webapp2.RequestHandler):
     def post(self):
         rate_movie = self.request.get("rate-movie")
         rating     = self.request.get("rating")
-        
-        if not rate_movie or rate_movie.strip() == "":
-            self.renderError(400)
-            return
-        
-        if not rating or rating.strip() == "":
-            self.renderError(400)
-            return
-        
-        if not (rate_movie in getWatchedMovies()):
-            self.renderError(400)
-            return
         
         # render confirmation page
         t = jinja_env.get_template("rating-confirmation.html")
