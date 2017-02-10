@@ -24,18 +24,6 @@ class Movie(db.Model):
     rating = db.StringProperty()
 
 
-def getUnwatchedMovies():
-    """ Returns the list of movies the user wants to watch (but hasnt yet) """
-
-    return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
-
-
-def getWatchedMovies():
-    """ Returns the list of movies the user has already watched """
-
-    return [ "The Matrix", "The Big Green", "Ping Ping Playa" ]
-
-
 class Handler(webapp2.RequestHandler):
     """ A base RequestHandler class for our app.
         The other handlers inherit form this one.
