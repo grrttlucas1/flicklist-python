@@ -108,8 +108,10 @@ class Index(Handler):
         # We only want the Movies belonging to the current user
         # Modify the query below.
         # Instead of a GqlQuery, use an O.R.M. method like lines 186 and 187
-        unwatched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = False")
-
+        #unwatched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = False")
+        query = Movie.all().filter("owner", self.user).filter("watched", False)
+        unwatched_movies = query.run()
+        
         t = jinja_env.get_template("frontpage.html")
         content = t.render(
                         movies = unwatched_movies,
@@ -229,12 +231,14 @@ class RecentlyWatchedMovies(Handler):
         # TODO 4
         # Replace the code below with code that renders the 'recently-watched.html' template
         # Don't forget to pass recently_watched_movies over to your template.
-        content = ""
-        for movie in recently_watched_movies:
-            content += movie.title + ", "
-
+        #content = ""
+        #for movie in recently_watched_movies:
+        #    content += movie.title + ", "
+        #
+        #self.response.write(content)
+        t = jinja_env.get_template("recently-watched.html")
+        content = t.render(movies = recently_watched_movies)
         self.response.write(content)
-
 
 class Login(Handler):
 
@@ -354,7 +358,7 @@ app = webapp2.WSGIApplication([
     ('/add', AddMovie),
     ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings),
-
+    ('/recently-watched', RecentlyWatchedMovies),
     # TODO 3
     # include another route for recently watched movies
 
