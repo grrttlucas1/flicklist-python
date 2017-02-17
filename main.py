@@ -6,7 +6,7 @@ from google.appengine.ext import db
 
 # set up jinja
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
 # a list of movies that nobody should be allowed to watch
 terrible_movies = [
@@ -16,7 +16,7 @@ terrible_movies = [
     "Nine Lives"
 ]
 
-
+    
 class Movie(db.Model):
     title = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
@@ -60,20 +60,23 @@ class AddMovie(Handler):
         # if the user typed nothing at all, redirect and yell at them
         if (not new_movie_title) or (new_movie_title.strip() == ""):
             error = "Please specify the movie you want to add."
-            self.redirect("/?error=" + cgi.escape(error))
-
+            return self.redirect("/?error=" + error)
+        
         # if the user wants to add a terrible movie, redirect and yell at them
         if new_movie_title in terrible_movies:
             error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie_title)
-            self.redirect("/?error=" + cgi.escape(error, quote=True))
-
+            return self.redirect("/?error=" + error)
+        
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
         new_movie_title_escaped = cgi.escape(new_movie_title, quote=True)
-
+        
         # construct a movie object for the new movie
+
         movie = Movie(title = new_movie_title_escaped)
         movie.put()
-
+            
+        #movie = new_movie_title_escaped
+        
         # render the confirmation message
         t = jinja_env.get_template("add-confirmation.html")
         content = t.render(movie = movie)
@@ -129,7 +132,7 @@ class MovieRatings(Handler):
         self.response.write(content)
 
     def post(self):
-        rating = self.request.get("rating")
+        rating   = self.request.get("rating")
         movie_id = self.request.get("movie")
 
         # TODO 2
